@@ -1,4 +1,5 @@
 public class Body {
+    final static double G = 6.67e-11;
     public double xxPos;
     public double yyPos;
     public double xxVel;
@@ -24,4 +25,50 @@ public class Body {
         imgFileName = b.imgFileName;
     }
 
+    public double calcDistance(Body b) {
+        double distance;
+        distance = Math.sqrt( Math.pow(this.xxPos - b.xxPos, 2) + Math.pow(this.yyPos - b.yyPos, 2) );
+        return distance;
+    }
+
+    public double calcForceExertedBy(Body b) {
+        double force;
+        force = G * this.mass * b.mass / Math.pow(this.calcDistance(b), 2);
+        return force;
+    }
+
+    public double calcNetForceExertedByX(Body[] args) {
+        double forcex = 0;
+        for (Body b: args) {
+            if (this.equals(b)) {
+                continue;
+            }
+            forcex += this.calcForceExertedBy(b) * (b.xxPos - this.xxPos) / this.calcDistance(b);
+        }
+        return forcex;
+    }
+
+    public double calcNetForceExertedByY(Body[] args) {
+        double forcey = 0;
+        for (Body b: args) {
+            if (this.equals(b)) {
+                continue;
+            }
+            forcey += this.calcForceExertedBy(b) * (b.yyPos - this.yyPos) / this.calcDistance(b);
+        }
+        return forcey;
+    }
+
+    public void update(double dt, double fX, double fY) {
+        double accelxx = fX / this.mass;
+        double accelyy = fY / this.mass;
+        this.xxVel += accelxx * dt;
+        this.yyVel += accelyy * dt;
+        this.xxPos += this.xxVel * dt;
+        this.yyPos += this.yyVel * dt;
+    }
+    
+    public void draw() {
+        StdDraw.picture(this.xxPos, this.yyPos, "images/" + this.imgFileName);
+    }
 }
