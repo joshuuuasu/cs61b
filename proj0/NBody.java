@@ -30,9 +30,8 @@ public class NBody {
         String filename = args[2];
         Double radius = readRadius(filename);
         Body[] bodies = readBodies(filename);
-        
+
         StdDraw.enableDoubleBuffering();
-        
         StdDraw.setScale(-radius, radius);
 
         for (Double time = 0.0; time <= T; time += dt) {
@@ -57,7 +56,8 @@ public class NBody {
             StdDraw.show();
             StdDraw.pause(10);
         }
-
+        
+        
         StdOut.printf("%d\n", bodies.length);
         StdOut.printf("%.2e\n", radius);
         for (int i = 0; i < bodies.length; i++) {
