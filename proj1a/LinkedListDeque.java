@@ -105,19 +105,17 @@ public class LinkedListDeque<T> {
         return node1.item;
     }
 
-    private T getRecursive(LinkedListDeque<T> localDeque, int index) {
+    private T getRecursive(TNode node, int index) {
         /** helper function for recursive get method. */
-        if (index >= localDeque.size()) {
+        if (index >= this.size()) {
             return null;
         } else if (index == 0) {
-            return localDeque.sentinel.next.item;
+            return node.item;
         }
-        localDeque.removeFirst();
-        return localDeque.getRecursive(index - 1);
+        return getRecursive(node.next,index - 1);
     }
 
     public T getRecursive(int index) {
-        LinkedListDeque copy = new LinkedListDeque(this);
-        return (T) getRecursive(copy, index);
+        return getRecursive(sentinel.next, index);
     }
 }

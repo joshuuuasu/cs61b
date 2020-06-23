@@ -155,17 +155,18 @@ public class ArrayDeque<T> {
     }
 
     public T get(int index) {
-        if (nextFirst < nextLast && index < size) {
+        if (index >= size) {
+            return null;
+        } else if (nextFirst < nextLast) {
             return items[nextFirst + 1 + index];
-        } else if (nextFirst == items.length - 1 && index < size) {
+        } else if (nextFirst == items.length - 1) {
             return items[index];
         } else if (nextFirst > nextLast && index < items.length - 1 - nextFirst) {
             return items[nextFirst + 1 + index];
-        } else if (nextFirst > nextLast && index >= items.length - 1 - nextFirst && index < size) {
+        } else if (nextFirst > nextLast && index >= items.length - 1 - nextFirst) {
             return items[index - items.length + 1 + nextFirst];
-        } else if (nextLast == 0 && index < size) {
+        } else if (nextLast == 0) {
             return items[nextFirst + 1 + index];
         }
-        return null;
     }
 }
