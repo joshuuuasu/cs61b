@@ -1,12 +1,12 @@
 public class LinkedListDeque<T> {
     /**  This is to build implementations of a Deque using lists. */
 
-    public class TNode {
+    private class TNode {
         /** creating TNode with prev, item and next. */
 
-        public TNode prev;
-        public T item;
-        public TNode next;
+        private TNode prev;
+        private T item;
+        private TNode next;
 
         public TNode(T someT, TNode prevTNode, TNode nextTNode) {
             prev = prevTNode;
@@ -26,7 +26,7 @@ public class LinkedListDeque<T> {
         size = 1;
     }
 
-    public LinkedListDeque() {
+    private LinkedListDeque() {
         /** creating empty LinkedListDeque. */
         sentinel = new TNode(null, null, null);
         sentinel.next = sentinel;
@@ -34,11 +34,11 @@ public class LinkedListDeque<T> {
         size = 0;
     }
 
-    public LinkedListDeque(LinkedListDeque other) {
+    private LinkedListDeque(LinkedListDeque other) {
         /** create a copy of other. */
         sentinel = new TNode(null, null, null);
         for (int i = 0; i < other.size(); i++) {
-            this.addLast( (T) other.get(i) );
+            this.addLast((T) other.get(i));
             /* syntax is from IntelliJ Debug correction! Woof! */
         }
     }
@@ -74,11 +74,14 @@ public class LinkedListDeque<T> {
     }
 
     public T removeFirst() {
-       T temp = sentinel.next.item;
-       sentinel.next = sentinel.next.next;
-       sentinel.next.prev = sentinel;
-       size -= 1;
-       return temp;
+        T temp = sentinel.next.item;
+        sentinel.next = sentinel.next.next;
+        sentinel.next.prev = sentinel;
+        size -= 1;
+        if (size < 0) {
+            size = 0;
+        }
+        return temp;
     }
 
     public T removeLast() {
@@ -86,6 +89,9 @@ public class LinkedListDeque<T> {
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
         size -= 1;
+        if (size < 0) {
+            size = 0;
+        }
         return temp;
     }
 
@@ -111,6 +117,7 @@ public class LinkedListDeque<T> {
     }
 
     public T getRecursive(int index) {
-        return getRecursive(this, index);
+        LinkedListDeque copy = new LinkedListDeque(this);
+        return (T) getRecursive(copy, index);
     }
 }

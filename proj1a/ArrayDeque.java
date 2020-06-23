@@ -1,11 +1,9 @@
-import java.util.Arrays;
-
 public class ArrayDeque<T> {
     /**  This is to build implementations of a Deque using arrays. */
-    public T[] items;
-    public int nextFirst;
-    public int nextLast;
-    public int size;
+    private T[] items;
+    private int nextFirst;
+    private int nextLast;
+    private int size;
 
     public ArrayDeque(T item) {
         items = (T[]) new Object[8];
@@ -15,14 +13,14 @@ public class ArrayDeque<T> {
         size = 1;
     }
 
-    public ArrayDeque() {
+    private ArrayDeque() {
         items = (T[]) new Object[8];
         nextFirst = 3;
         nextLast = 4;
         size = 0;
     }
 
-    public ArrayDeque(ArrayDeque other) {
+    private ArrayDeque(ArrayDeque other) {
         items = (T[]) new Object[other.items.length];
         System.arraycopy(other.items, 0, items, 0, other.items.length);
         nextFirst = other.nextFirst;
@@ -30,7 +28,7 @@ public class ArrayDeque<T> {
         size = other.size;
     }
 
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         /** This resize method is only for INCREASE items.length. */
         T[] temp = (T[]) new Object[capacity];
         if (nextFirst == items.length - 1) {
@@ -48,7 +46,7 @@ public class ArrayDeque<T> {
 
     public void addFirst(T item) {
         if (nextFirst == nextLast) {
-            resize(size * 2);
+            resize(items.length * 2);
         }
         items[nextFirst] = item;
         nextFirst -= 1;
@@ -60,7 +58,7 @@ public class ArrayDeque<T> {
 
     public void addLast(T item) {
         if (nextFirst == nextLast) {
-            resize(size * 2);
+            resize(items.length * 2);
         }
         items[nextLast] = item;
         nextLast += 1;
@@ -101,15 +99,15 @@ public class ArrayDeque<T> {
         }
     }
 
-    public double usageFactor() {
+    private double usageFactor() {
         return ((double) size) / items.length;
     }
 
-    public void halve() {
+    private void halve() {
         T[] temp = (T[]) new Object[items.length / 2];
         if (nextFirst > nextLast) {
             System.arraycopy(items, nextFirst + 1, temp, 4, items.length - 1 - nextFirst);
-            System.arraycopy(items, 0, temp, 3 + items.length -nextFirst, nextLast);
+            System.arraycopy(items, 0, temp, 3 + items.length - nextFirst, nextLast);
         } else {
             System.arraycopy(items, nextFirst + 1, temp, 4, size);
         }
@@ -128,6 +126,9 @@ public class ArrayDeque<T> {
             nextFirst += 1;
         }
         size -= 1;
+        if (size < 0) {
+            size = 0;
+        }
         while (items.length >= 16 && usageFactor() < 0.25) {
             halve();
         }
@@ -144,6 +145,9 @@ public class ArrayDeque<T> {
             nextLast -= 1;
         }
         size -= 1;
+        if (size < 0) {
+            size = 0;
+        }
         while (items.length >= 16 && usageFactor() < 0.25) {
             halve();
         }
