@@ -13,14 +13,14 @@ public class ArrayDeque<T> {
         size = 1;
     }
 
-    private ArrayDeque() {
+    public ArrayDeque() {
         items = (T[]) new Object[8];
         nextFirst = 3;
         nextLast = 4;
         size = 0;
     }
 
-    private ArrayDeque(ArrayDeque other) {
+    public ArrayDeque(ArrayDeque other) {
         items = (T[]) new Object[other.items.length];
         System.arraycopy(other.items, 0, items, 0, other.items.length);
         nextFirst = other.nextFirst;

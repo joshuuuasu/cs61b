@@ -26,7 +26,7 @@ public class LinkedListDeque<T> {
         size = 1;
     }
 
-    private LinkedListDeque() {
+    public LinkedListDeque() {
         /** creating empty LinkedListDeque. */
         sentinel = new TNode(null, null, null);
         sentinel.next = sentinel;
@@ -34,7 +34,7 @@ public class LinkedListDeque<T> {
         size = 0;
     }
 
-    private LinkedListDeque(LinkedListDeque other) {
+    public LinkedListDeque(LinkedListDeque other) {
         /** create a copy of other. */
         sentinel = new TNode(null, null, null);
         for (int i = 0; i < other.size(); i++) {
