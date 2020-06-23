@@ -157,11 +157,8 @@ public class ArrayDeque<T> {
     public T get(int index) {
         if (index >= size) {
             return null;
-        } else if (nextFirst == items.length - 1) {
-            return items[index];
-        } else if (nextFirst > nextLast && index >= items.length - 1 - nextFirst) {
-            return items[index - items.length + 1 + nextFirst];
         }
-        return items[nextFirst + 1 + index];
+        int start = (nextFirst + 1) % items.length;
+        return items[(start + index) % items.length];
     }
 }
