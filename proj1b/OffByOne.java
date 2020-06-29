@@ -5,3 +5,4 @@ public class OffByOne implements CharacterComparator {
         return Math.abs(x - y) == 1;
     }
 }
+

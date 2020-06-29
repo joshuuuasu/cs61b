@@ -20,8 +20,8 @@ public class Palindrome {
     }
 
     public boolean isPalindrome(String word) {
-       Deque<Character> wordDeque = wordToDeque(word);
-       return isPalindrome(wordDeque);
+        Deque<Character> wordDeque = wordToDeque(word);
+        return isPalindrome(wordDeque);
     }
 
     private boolean isPalindrome(Deque<Character> dqc, CharacterComparator cc) {

@@ -8,7 +8,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         private T item;
         private TNode next;
 
-        public TNode(T someT, TNode prevTNode, TNode nextTNode) {
+        private TNode(T someT, TNode prevTNode, TNode nextTNode) {
             prev = prevTNode;
             item = someT;
             next = nextTNode;
@@ -43,26 +43,31 @@ public class LinkedListDeque<T> implements Deque<T> {
         }
     }
 
+    @Override
     public void addFirst(T item) {
         sentinel.next = new TNode(item, sentinel, sentinel.next);
         sentinel.next.next.prev = sentinel.next;
         size += 1;
     }
 
+    @Override
     public void addLast(T item) {
         sentinel.prev = new TNode(item, sentinel.prev, sentinel);
         sentinel.prev.prev.next = sentinel.prev;
         size += 1;
     }
 
+    @Override
     public boolean isEmpty() {
         return sentinel.prev == sentinel && sentinel.next == sentinel;
     }
 
+    @Override
     public int size() {
         return size;
     }
 
+    @Override
     public void printDeque() {
         TNode copy = sentinel;
         while (copy.next != sentinel) {
@@ -73,6 +78,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         System.out.println();
     }
 
+    @Override
     public T removeFirst() {
         T temp = sentinel.next.item;
         sentinel.next = sentinel.next.next;
@@ -84,6 +90,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         return temp;
     }
 
+    @Override
     public T removeLast() {
         T temp = sentinel.prev.item;
         sentinel.prev = sentinel.prev.prev;
@@ -95,6 +102,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         return temp;
     }
 
+    @Override
     public T get(int index) {
         TNode node1 = sentinel;
         if (index < this.size()) {
@@ -112,7 +120,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         } else if (index == 0) {
             return node.item;
         }
-        return getRecursive(node.next,index - 1);
+        return getRecursive(node.next, index - 1);
     }
 
     public T getRecursive(int index) {
