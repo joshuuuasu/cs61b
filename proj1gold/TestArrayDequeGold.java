@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 public class TestArrayDequeGold {
 
     @Test
-    public void ArrayDequeTest() {
+    public void arrayDequeTest() {
         /** @source: StudentArrayDequeLauncher.java */
 
         StudentArrayDeque<Integer> sad = new StudentArrayDeque<>();
