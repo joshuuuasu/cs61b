@@ -17,7 +17,7 @@ import huglife.Empty;
 public class TestClorus {
 
     @Test
-    public void TestBasics() {
+    public void testBasics() {
         Clorus c = new Clorus(2);
         assertEquals(2, c.energy(), 0.01);
         assertEquals(new Color(34, 0, 231), c.color());
@@ -79,7 +79,7 @@ public class TestClorus {
 
         assertEquals(expected2, actual2);
 
-        
+
         // Otherwise, if the Clorus has energy >= 1, it will REPLICATE to a random empty square.
         c = new Clorus(10);
         HashMap<Direction, Occupant> topEmpty2 = new HashMap<Direction, Occupant>();

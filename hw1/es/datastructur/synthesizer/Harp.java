@@ -1,7 +1,6 @@
 package es.datastructur.synthesizer;
 
-//Note: This file will not compile until you complete task 1 (BoundedQueue).
-public class GuitarString {
+public class Harp {
     /** Constants. Do not change. In case you're curious, the keyword final
      * means the values cannot be changed at runtime. */
     private static final int SR = 44100;      // Sampling Rate
@@ -11,14 +10,14 @@ public class GuitarString {
     private BoundedQueue<Double> buffer;
 
     /* Create a guitar string of the given frequency.  */
-    public GuitarString(double frequency) {
-        buffer = new ArrayRingBuffer<>((int) Math.round(SR / frequency));
+    public Harp (double frequency) {
+        buffer = new ArrayRingBuffer<>((int) Math.round(2 * SR / frequency));
         for (int i = 0; i < buffer.capacity(); i++) {
             buffer.enqueue(0.0);
         }
     }
 
-    /* Pluck the guitar string by replacing the buffer with white noise. */
+    /* Pluck the harp string by replacing the buffer with white noise. */
     public void pluck() {
         while (!buffer.isEmpty()) {
             buffer.dequeue();
@@ -34,7 +33,7 @@ public class GuitarString {
     public void tic() {
         double front = buffer.dequeue();
         double next = buffer.peek();
-        buffer.enqueue(DECAY * (front + next) / 2);
+        buffer.enqueue(-1 * DECAY * (front + next) / 2);
     }
 
     /* Return the double at the front of the buffer. */

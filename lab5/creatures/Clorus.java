@@ -5,7 +5,7 @@ import huglife.Creature;
 import huglife.Direction;
 import huglife.Occupant;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
