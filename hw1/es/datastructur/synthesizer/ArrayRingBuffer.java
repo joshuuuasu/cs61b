@@ -98,6 +98,8 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
         public boolean hasNext() {
             if (isEmpty()) {
                 return false;
+            } else if (pos == -1) {
+                return false;
             } else if (first < last) {
                 return pos >= first && pos < last;
             } else {
@@ -115,12 +117,18 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
             if (pos == capacity()) {
                 pos = 0;
             }
+            if (pos == last) {
+                pos = -1;
+            }
             return result;
         }
     }
 
     @Override
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         if (o.getClass() == getClass()) {
             if (((ArrayRingBuffer) o).fillCount() == fillCount()) {
                 if (((ArrayRingBuffer) o).capacity() == capacity()) {
