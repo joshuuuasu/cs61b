@@ -69,7 +69,7 @@ public class TestBSTMap {
         assertEquals(456, b.size());
     }
 
-    //assumes get/containskey work
+    //assumes get/containsKey work
     @Test
     public void sanityPutTest() {
     	BSTMap<String, Integer> b = new BSTMap<String, Integer>();
