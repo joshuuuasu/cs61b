@@ -1,7 +1,6 @@
 package hw2;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-import java.lang.*;
 
 public class Percolation {
 
@@ -46,8 +45,8 @@ public class Percolation {
     private void unionNeighbors(int row, int col) {
         for (int[] dir: dirs) {
             int[] adj = {row + dir[0], col + dir[1]};
-            if (adj[0] >= 0 && adj[0] < grid.length && adj[1] >= 0 &&
-                    adj[1] < grid[0].length && grid[adj[0]][adj[1]] == 1) {
+            if (adj[0] >= 0 && adj[0] < grid.length && adj[1] >= 0 && adj[1] < grid[0].length
+                && grid[adj[0]][adj[1]] == 1) {
                 uf.union(xyTo1D(row, col), xyTo1D(adj[0], adj[1]));
                 uf2.union(xyTo1D(row, col), xyTo1D(adj[0], adj[1]));
             }
@@ -77,7 +76,7 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return uf.connected(0, grid.length * grid[0].length + 1);
+        return uf.connected(0, grid.length * grid[0].length + 1) && numberOfOpenSites() > 0;
     }
 
     public static void main(String[] args) {

@@ -1,5 +1,4 @@
 package hw2;
-import java.lang.*;
 import edu.princeton.cs.introcs.StdRandom;
 import edu.princeton.cs.introcs.StdStats;
 
@@ -18,7 +17,7 @@ public class PercolationStats {
         for (int i = 0; i < T; i++) {
             Percolation p = pf.make(N);
             while (!p.percolates()) {
-                int x = StdRandom.uniform(N * N + 1);
+                int x = StdRandom.uniform(N * N);
                 int[] pos = oneDToXY(x, N);
                 p.open(pos[0], pos[1]);
             }
