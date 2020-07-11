@@ -1,10 +1,13 @@
 import java.util.NoSuchElementException;
+import java.util.Iterator;
+import java.util.Stack;
 
-/*  @author Josh Hug, with most code created by:
+/*  @author Joshua Su
+ *  @author Josh Hug, with most code created by:
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public class BST<Key extends Comparable<Key>> {
+public class BST<Key extends Comparable<Key>> implements Iterable<Key> {
     /**
      * Initializes an empty BST.
      */
@@ -245,5 +248,55 @@ public class BST<Key extends Comparable<Key>> {
      */
     private boolean isEmpty() {
         return size() == 0;
+    }
+
+    private int totalDepth(Node n, int depth) {
+        if (n == null) {
+            return 0;
+        }
+        return depth + totalDepth(n.left, depth + 1) + totalDepth(n.right, depth + 1);
+    }
+
+    public double averageDepth() {
+        return ((double) totalDepth(root, 0)) / size();
+    }
+
+    @Override
+    public Iterator iterator() {
+        return new BSTIterator();
+    }
+
+    private class BSTIterator implements Iterator<Key> {
+        private Stack<Node> s;
+
+        public BSTIterator() {
+            s = new Stack();
+            addLeft(s, root);
+        }
+
+        private void addLeft(Stack s, Node n) {
+            Node temp = n;
+            while (temp != null) {
+                s.push(temp);
+                temp = temp.left;
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !s.isEmpty();
+        }
+
+        @Override
+        public Key next() {
+            Key res = s.pop().key;
+            while (!s.isEmpty()) {
+                Node curr = s.peek();
+                if (curr.right != null) {
+                    addLeft(s, curr.right);
+                }
+            }
+            return res;
+        }
     }
 }
