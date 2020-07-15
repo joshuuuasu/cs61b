@@ -1,3 +1,48 @@
+import java.util.*;
+
+public class FlightSolver {
+
+    private int maxNum;
+
+    public FlightSolver(ArrayList<Flight> flights) {
+        maxNum = 0;
+
+        PriorityQueue<Flight> startMinPQ = new PriorityQueue<>(new Comparator<Flight>() {
+            @Override
+            public int compare(Flight o1, Flight o2) {
+                return o1.startTime() - o2.startTime();
+            }
+        });
+
+        PriorityQueue<Flight> endMinPQ = new PriorityQueue<>(new Comparator<Flight>() {
+            @Override
+            public int compare(Flight o1, Flight o2) {
+                return o1.endTime() - o2.endTime();
+            }
+        });
+
+        startMinPQ.addAll(flights);
+        endMinPQ.addAll(flights);
+
+        int tally = 0;
+        while (startMinPQ.size() != 0 && endMinPQ.size() != 0) {
+            if (startMinPQ.peek().startTime() <= endMinPQ.peek().endTime()) {
+                tally += startMinPQ.poll().passengers();
+                maxNum = tally > maxNum ? tally : maxNum;
+            }
+            else {
+                tally -= endMinPQ.poll().passengers();
+            }
+        }
+    }
+
+    public int solve() {
+        return maxNum;
+    }
+}
+//below is my original solution. The runtime is quadratic.
+
+/*
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -8,6 +53,8 @@ import java.util.PriorityQueue;
  * If a flight starts at the same time as a flight's end time, they are
  * considered to be in the air at the same time.
  */
+
+/*
 public class FlightSolver {
 
     private class flightList {
@@ -75,5 +122,4 @@ public class FlightSolver {
         }
         return pq.peek().numPassenger();
     }
-
-}
+} */

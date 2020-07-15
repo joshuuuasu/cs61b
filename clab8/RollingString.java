@@ -1,3 +1,5 @@
+import java.util.Queue;
+import java.util.LinkedList;
 /**
  * A String-like class that allows users to add and remove characters in the String
  * in constant time and have a constant-time hash function. Used for the Rabin-Karp
@@ -17,6 +19,9 @@ class RollingString{
      */
     static final int PRIMEBASE = 6113;
 
+    private Queue<Character> rs;
+    private int hashTotal;
+    private int size;
     /**
      * Initializes a RollingString with a current value of String s.
      * s must be the same length as the maximum length.
@@ -24,6 +29,13 @@ class RollingString{
     public RollingString(String s, int length) {
         assert(s.length() == length);
         /* FIX ME */
+        rs = new LinkedList<>();
+        hashTotal = 0;
+        for (int i = 0; i < length; i++) {
+            rs.offer(s.charAt(i));
+            hashTotal = hashTotal * UNIQUECHARS + (int) s.charAt(i);
+        }
+        size = length;
     }
 
     /**
@@ -32,7 +44,10 @@ class RollingString{
      * Should be a constant-time operation.
      */
     public void addChar(char c) {
-        /* FIX ME */
+        hashTotal -= ((int) rs.peek()) * Math.pow(UNIQUECHARS, rs.size() - 1);
+        hashTotal = hashTotal * UNIQUECHARS + (int) c;
+        rs.offer(c);
+        rs.poll();
     }
 
 
@@ -44,7 +59,10 @@ class RollingString{
     public String toString() {
         StringBuilder strb = new StringBuilder();
         /* FIX ME */
-        return "";
+        for (Character c: rs) {
+            strb.append(c);
+        }
+        return strb.toString();
     }
 
     /**
@@ -53,7 +71,7 @@ class RollingString{
      */
     public int length() {
         /* FIX ME */
-        return -1;
+        return size;
     }
 
 
@@ -64,8 +82,14 @@ class RollingString{
      */
     @Override
     public boolean equals(Object o) {
-        /* FIX ME */
-        return false;
+        if (o.getClass() != getClass()) {
+            return false;
+        }
+        RollingString temp = (RollingString) o;
+        if ( temp.length() != length()) {
+            return false;
+        }
+        return toString().equals(o.toString());
     }
 
     /**
@@ -75,6 +99,6 @@ class RollingString{
     @Override
     public int hashCode() {
         /* FIX ME */
-        return -1;
+        return Math.floorMod(hashTotal, PRIMEBASE);
     }
 }
