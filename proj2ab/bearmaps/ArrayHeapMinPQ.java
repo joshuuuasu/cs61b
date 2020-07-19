@@ -21,6 +21,10 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
             item = t;
             priority = d;
         }
+
+        void setPriority(double d) {
+            priority = d;
+        }
     }
 
     public ArrayHeapMinPQ() {
@@ -88,7 +92,6 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
                     items.replace(entries[k].item, k);
                     sink(k * 2);
                 }
-                break;
             } else {
                 if (entries[k].priority > entries[2 * k + 1].priority) {
                     Entry temp = entries[k];
@@ -98,8 +101,8 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
                     items.replace(entries[k].item, k);
                     sink(k * 2 + 1);
                 }
-                break;
             }
+            break;
         }
     }
 
@@ -132,7 +135,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         }
         int ind = items.get(item);
         double oldPriority = entries[ind].priority;
-        entries[ind].priority = priority;
+        entries[ind].setPriority(priority);
         if (priority < oldPriority) {
             swim(ind);
         } else {
