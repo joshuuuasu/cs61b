@@ -1,142 +1,168 @@
 package bearmaps;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
 
-    private Entry[] entries;
-    private HashMap<T, Integer> items;          //map to item's location in the array.
-    private int size;
-
-    private static final int INITIALSIZE = 16;
-    private static final double MAXLOADFACTOR = 0.75;
-    private static final double MINLOADFACTOR = 0.25;
-
-    private class Entry {
-        private T item;
-        private double priority;
-
-        Entry(T t, Double d) {
-            item = t;
-            priority = d;
-        }
-    }
+    private ArrayList<PriorityNode> itemPQ;
+    private HashMap<T, Integer> itemMapIndex;
 
     public ArrayHeapMinPQ() {
-        entries = new ArrayHeapMinPQ.Entry[INITIALSIZE];
-        items = new HashMap<>();
-        size = 0;
+        itemPQ =  new ArrayList<>();
+        itemMapIndex = new HashMap<>();
     }
 
-    private void swim(int k) {
-        while (k > 1) {
-            if (entries[k / 2].priority > entries[k].priority) {
-                Entry temp = entries[k / 2];
-                entries[k / 2] = entries[k];
-                entries[k] = temp;
-                items.replace(entries[k / 2].item, k / 2);
-                items.replace(entries[k].item, k);
-                swim(k / 2);
-            }
-            break;
-        }
-    }
-
-    private void resize(int i, int s) {
-        Entry[] temp = new ArrayHeapMinPQ.Entry[i];
-        System.arraycopy(entries, 0, temp, 0, s);
-        entries = temp;
-    }
-
+    /* Adds an item with the given priority value. Throws an
+     * IllegalArgumentException if item is already present.
+     * You may assume that item is never null. */
     @Override
     public void add(T item, double priority) {
         if (contains(item)) {
             throw new IllegalArgumentException();
         }
-        Entry e = new Entry(item, priority);
-        size += 1;
-        if (((double) size) / entries.length > MAXLOADFACTOR) {
-            resize(entries.length * 2, size);
-        }
-        entries[size] = e;
-        items.put(item, size);
-        swim(size);
+        itemPQ.add(new PriorityNode(item, priority));
+        itemMapIndex.put(item, size() - 1);
+        climb(size() - 1);
     }
 
+    /* Returns true if the PQ contains the given item. */
     @Override
     public boolean contains(T item) {
-        return items.containsKey(item);
+        if (isEmpty()) {
+            return false;
+        }
+        return itemMapIndex.containsKey(item);
     }
 
+    /* Returns the minimum item. Throws NoSuchElementException if the PQ is empty. */
     @Override
     public T getSmallest() {
-        if (size == 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        return entries[1].item;
+        return itemPQ.get(0).getItem();
     }
 
-    private void sink(int k) {
-        while (size >= 2 * k + 1) {
-            if (entries[2 * k + 1].priority > entries[2 * k].priority) {
-                if (entries[k].priority > entries[2 * k].priority) {
-                    Entry temp = entries[k];
-                    entries[k] = entries[k * 2];
-                    entries[k * 2] = temp;
-                    items.replace(entries[k * 2].item, k * 2);
-                    items.replace(entries[k].item, k);
-                    sink(k * 2);
-                }
-                break;
-            } else {
-                if (entries[k].priority > entries[2 * k + 1].priority) {
-                    Entry temp = entries[k];
-                    entries[k] = entries[k * 2 + 1];
-                    entries[k * 2 + 1] = temp;
-                    items.replace(entries[k * 2 + 1].item, k * 2 + 1);
-                    items.replace(entries[k].item, k);
-                    sink(k * 2 + 1);
-                }
-                break;
-            }
-        }
-    }
-
+    /* Removes and returns the minimum item. Throws NoSuchElementException if the PQ is empty. */
     @Override
     public T removeSmallest() {
-        if (size == 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        T res = entries[1].item;
-        entries[1] = entries[size];
-        entries[size] = null;
-        size -= 1;
-        sink(1);
-        items.remove(res);
-        if (((double) size) / entries.length < MINLOADFACTOR && entries.length > INITIALSIZE) {
-            resize(entries.length / 2, size + 1);
-        }
-        return res;
+        T toRemove = itemPQ.get(0).getItem();
+        swap(0, size() - 1);
+        itemPQ.remove(size() - 1);
+        itemMapIndex.remove(toRemove);
+        sink(0);
+        return toRemove;
     }
 
+    /* Returns the number of items in the PQ. */
     @Override
     public int size() {
-        return size;
+        return itemPQ.size();
     }
 
+    /* Changes the priority of the given item. Throws NoSuchElementException if the item
+     * doesn't exist. */
     @Override
     public void changePriority(T item, double priority) {
-        if (size() == 0 || !contains(item)) {
+        if (isEmpty() || !contains(item)) {
             throw new NoSuchElementException();
         }
-        int ind = items.get(item);
-        double oldPriority = entries[ind].priority;
-        entries[ind].priority = priority;
-        if (priority < oldPriority) {
-            swim(ind);
+        int index = itemMapIndex.get(item);
+        double oldPriority = itemPQ.get(index).getPriority();
+        itemPQ.get(index).setPriority(priority);
+        if (oldPriority < priority) {
+            sink(index);
         } else {
-            sink(ind);
+            climb(index);
         }
     }
+
+    private class PriorityNode {
+
+        private T item;
+        private double priority;
+
+        PriorityNode(T item, double priority) {
+            this.item = item;
+            this.priority = priority;
+        }
+
+        T getItem() {
+            return item;
+        }
+
+        double getPriority() {
+            return priority;
+        }
+
+        void setPriority(double priority) {
+            this.priority = priority;
+        }
+    }
+
+    private boolean isEmpty() {
+        return size() == 0;
+    }
+
+    // Return the index of parent of current node.
+    private int parent(int i) {
+        if (i == 0) {
+            return 0;
+        } else {
+            return (i - 1) / 2;
+        }
+    }
+
+    // Return the index of left child of current node.
+    private int leftChild(int i) {
+        return 2 * i + 1;
+    }
+
+    // Return the index of right child of current node.
+    private int rightChild(int i) {
+        return 2 * i + 2;
+    }
+
+    // Helper of add().
+    private void climb(int i) {
+        if (i > 0 && smaller(i, parent(i))) {
+            swap(i, parent(i));
+            climb(parent(i));
+        }
+    }
+
+    // Helper of removeSmallest().
+    private void sink(int i) {
+        int smallest = i;
+        if (leftChild(i) <= size() - 1 && smaller(leftChild(i), i)) {
+            smallest = leftChild(i);
+        }
+        if (rightChild(i) <= size() - 1 && smaller(rightChild(i), smallest)) {
+            smallest = rightChild(i);
+        }
+        if (smallest != i) {
+            swap(i, smallest);
+            sink(smallest);
+        }
+    }
+
+    // Swap two nodes.
+    private void swap(int i, int j) {
+        PriorityNode temp = itemPQ.get(i);
+        itemPQ.set(i, itemPQ.get(j));
+        itemPQ.set(j, temp);
+        itemMapIndex.put(itemPQ.get(i).getItem(), i);
+        itemMapIndex.put(itemPQ.get(j).getItem(), j);
+    }
+
+    // Return true if ith node has smaller priority than jth node.
+    private boolean smaller(int i, int j) {
+        return itemPQ.get(i).getPriority() < itemPQ.get(j).getPriority();
+    }
+
 }
