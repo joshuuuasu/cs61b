@@ -11,7 +11,7 @@ public class KDTree implements PointSet {
         private boolean horizontal;
         private Node leftChild, rightChild;
 
-        public Node(Point p, boolean b) {
+        Node(Point p, boolean b) {
             point = p;
             horizontal = b;
             leftChild = null;
@@ -54,7 +54,7 @@ public class KDTree implements PointSet {
             put(root, points.get(i));
         }
     }
-    
+
     private Node nearest(Node n, Point goal, Node best) {
         if (n == null) {
             return best;

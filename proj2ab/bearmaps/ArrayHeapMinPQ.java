@@ -9,22 +9,22 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
     private HashMap<T, Integer> items;          //map to item's location in the array.
     private int size;
 
-    private static final int initialSize = 16;
-    private static final double maxLoadFactor = 0.75;
-    private static final double minLoadFactor = 0.25;
+    private static final int INITIALSIZE = 16;
+        private static final double MAXLOADFACTOR = 0.75;
+    private static final double MINLOADFACTOR = 0.25;
 
     private class Entry {
         private T item;
         private double priority;
 
-        public Entry(T t, Double d) {
+        Entry(T t, Double d) {
             item = t;
             priority = d;
         }
     }
 
     public ArrayHeapMinPQ() {
-        entries = new ArrayHeapMinPQ.Entry[initialSize];
+        entries = new ArrayHeapMinPQ.Entry[INITIALSIZE];
         items = new HashMap<>();
         size = 0;
     }
@@ -56,7 +56,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         }
         Entry e = new Entry(item, priority);
         size += 1;
-        if (((double) size) / entries.length > maxLoadFactor) {
+        if (((double) size) / entries.length > MAXLOADFACTOR) {
             resize(entries.length * 2, size);
         }
         entries[size] = e;
@@ -114,7 +114,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         size -= 1;
         sink(1);
         items.remove(res);
-        if (((double) size) / entries.length < minLoadFactor && entries.length > initialSize) {
+        if (((double) size) / entries.length < MINLOADFACTOR && entries.length > INITIALSIZE) {
             resize(entries.length / 2, size + 1);
         }
         return res;
