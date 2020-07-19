@@ -10,7 +10,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
     private int size;
 
     private static final int INITIALSIZE = 16;
-        private static final double MAXLOADFACTOR = 0.75;
+    private static final double MAXLOADFACTOR = 0.75;
     private static final double MINLOADFACTOR = 0.25;
 
     private class Entry {
@@ -127,7 +127,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
 
     @Override
     public void changePriority(T item, double priority) {
-        if (!contains(item)) {
+        if (size() == 0 || !contains(item)) {
             throw new NoSuchElementException();
         }
         int ind = items.get(item);
