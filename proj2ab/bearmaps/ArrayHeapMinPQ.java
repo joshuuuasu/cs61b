@@ -1,17 +1,13 @@
 package bearmaps;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
 
-    private Entry[] entries;
+    private ArrayList<Entry> entries;
     private HashMap<T, Integer> items;          //map to item's location in the array.
-    private int size;
-
-    private static final int INITIALSIZE = 16;
-    private static final double MAXLOADFACTOR = 0.75;
-    private static final double MINLOADFACTOR = 0.25;
 
     private class Entry {
         private T item;
@@ -22,35 +18,53 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
             priority = d;
         }
 
+        T getItem() {
+            return item;
+        }
+
+        double getPriority() {
+            return priority;
+        }
+
         void setPriority(double d) {
             priority = d;
         }
     }
 
     public ArrayHeapMinPQ() {
-        entries = new ArrayHeapMinPQ.Entry[INITIALSIZE];
+        entries = new ArrayList<>();
         items = new HashMap<>();
-        size = 0;
+    }
+
+    private int parent(int k) {
+        return k == 0 ? 0 : (k - 1) / 2;
+    }
+
+    private int leftChild(int k) {
+        return 2 * k + 1;
+    }
+
+    private int rightChild(int k) {
+        return 2 * k + 2;
+    }
+
+    private boolean smaller(int i, int j) {
+        return entries.get(i).getPriority() < entries.get(j).getPriority();
+    }
+
+    private void swap(int i, int j) {
+        Entry temp = entries.get(i);
+        entries.set(i, entries.get(j));
+        entries.set(j, temp);
+        items.replace(entries.get(i).getItem(), i);
+        items.replace(entries.get(j).getItem(), j);
     }
 
     private void swim(int k) {
-        while (k > 1) {
-            if (entries[k / 2].priority > entries[k].priority) {
-                Entry temp = entries[k / 2];
-                entries[k / 2] = entries[k];
-                entries[k] = temp;
-                items.replace(entries[k / 2].item, k / 2);
-                items.replace(entries[k].item, k);
-                swim(k / 2);
-            }
-            break;
+        if (k > 0 && smaller(k, parent(k))) {
+            swap(k, parent(k));
+            swim(parent(k));
         }
-    }
-
-    private void resize(int i, int s) {
-        Entry[] temp = new ArrayHeapMinPQ.Entry[i];
-        System.arraycopy(entries, 0, temp, 0, s);
-        entries = temp;
     }
 
     @Override
@@ -58,14 +72,9 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         if (contains(item)) {
             throw new IllegalArgumentException();
         }
-        Entry e = new Entry(item, priority);
-        size += 1;
-        if (((double) size) / entries.length > MAXLOADFACTOR) {
-            resize(entries.length * 2, size);
-        }
-        entries[size] = e;
-        items.put(item, size);
-        swim(size);
+        entries.add(new Entry(item, priority));
+        items.put(item, size() - 1);
+        swim(size() - 1);
     }
 
     @Override
@@ -75,57 +84,42 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
 
     @Override
     public T getSmallest() {
-        if (size == 0) {
+        if (size() == 0) {
             throw new NoSuchElementException();
         }
-        return entries[1].item;
+        return entries.get(0).item;
     }
 
     private void sink(int k) {
-        while (size >= 2 * k + 1) {
-            if (entries[2 * k + 1].priority > entries[2 * k].priority) {
-                if (entries[k].priority > entries[2 * k].priority) {
-                    Entry temp = entries[k];
-                    entries[k] = entries[k * 2];
-                    entries[k * 2] = temp;
-                    items.replace(entries[k * 2].item, k * 2);
-                    items.replace(entries[k].item, k);
-                    sink(k * 2);
-                }
-            } else {
-                if (entries[k].priority > entries[2 * k + 1].priority) {
-                    Entry temp = entries[k];
-                    entries[k] = entries[k * 2 + 1];
-                    entries[k * 2 + 1] = temp;
-                    items.replace(entries[k * 2 + 1].item, k * 2 + 1);
-                    items.replace(entries[k].item, k);
-                    sink(k * 2 + 1);
-                }
-            }
-            break;
+        int smallest = k;
+        if (size() > leftChild(k) && smaller(leftChild(k), smallest)) {
+            smallest = leftChild(k);
+        }
+        if (size() > rightChild(k) && smaller(rightChild(k), smallest)) {
+            smallest = rightChild(k);
+        }
+        if (smallest != k) {
+            swap(k, smallest);
+            sink(smallest);
         }
     }
 
     @Override
     public T removeSmallest() {
-        if (size == 0) {
+        if (size() == 0) {
             throw new NoSuchElementException();
         }
-        T res = entries[1].item;
-        entries[1] = entries[size];
-        entries[size] = null;
-        size -= 1;
-        sink(1);
+        T res = entries.get(0).item;
+        swap(0, size() - 1);
+        entries.remove(size() - 1);
         items.remove(res);
-        if (((double) size) / entries.length < MINLOADFACTOR && entries.length > INITIALSIZE) {
-            resize(entries.length / 2, size + 1);
-        }
+        sink(0);
         return res;
     }
 
     @Override
     public int size() {
-        return size;
+        return entries.size();
     }
 
     @Override
@@ -134,8 +128,8 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
             throw new NoSuchElementException();
         }
         int ind = items.get(item);
-        double oldPriority = entries[ind].priority;
-        entries[ind].setPriority(priority);
+        double oldPriority = entries.get(ind).getPriority();
+        entries.get(ind).setPriority(priority);
         if (priority < oldPriority) {
             swim(ind);
         } else {

@@ -45,11 +45,11 @@ public class ArrayHeapMinPQTest {
     public void changePriorityTest() {
         ArrayHeapMinPQ<Integer> intPQ = new ArrayHeapMinPQ<>();
         for (int i = 0; i < 100; i++) {
-            intPQ.add(i, 100.0 - i);
+            intPQ.add((Integer) i, i);
         }
 
         for (int i = 0; i < 50; i++) {
-            intPQ.changePriority((Integer) i, 0);
+            intPQ.changePriority((Integer) i, i / 10.0 + 0.0001);
             assertEquals((Integer) i, intPQ.removeSmallest());
         }
     }
