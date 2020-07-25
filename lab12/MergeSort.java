@@ -89,7 +89,7 @@ public class MergeSort {
             Queue first = q.dequeue();
             q.enqueue(mergeSortedQueues(first, q.dequeue()));
         }
-        while(q.peek().size() > 0) {
+        while(!q.isEmpty() && q.peek().size() > 0) {
             items.enqueue(q.peek().dequeue());
         }
         return items;
