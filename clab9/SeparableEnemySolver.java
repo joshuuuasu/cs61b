@@ -23,10 +23,31 @@ public class SeparableEnemySolver {
      * Returns true if input is separable, false otherwise.
      */
     public boolean isSeparable() {
-        // TODO: Fix me
-        return false;
+        Map<String, Integer> colors = new HashMap<>();
+        for (String label : g.labels()) {
+            if (!colors.containsKey(label)) {
+                if (!isSeparableHelper(label, null, 1, colors)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
+    private boolean isSeparableHelper(String label, String parent, int color, Map<String, Integer> colors) {
+        if (colors.containsKey(label)) {
+            return colors.get(label).equals(color);
+        }
+        colors.put(label, color);
+        for (String neighbor : g.neighbors(label)) {
+            if (!neighbor.equals(parent)) {
+                if (!isSeparableHelper(neighbor, label, -1 * color, colors)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     /* HELPERS FOR READING IN CSV FILES. */
 

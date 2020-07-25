@@ -27,6 +27,13 @@ public class IntegerHopGraph implements AStarGraph<Integer> {
     public double estimatedDistanceToGoal(Integer s, Integer goal) {
         // possibly fun challenge: Try to find an admissible heuristic that
         // speeds up your search. This is tough!
-        return 0;
+        if (s * s < goal && (s + 5) * 2 <= s * s) {
+            return 10;
+        } else if (s * 2 < goal && (s + 5) <= s * 2) {
+            return 5;
+        } else if (s / 2 > goal && (s - 5) >= s / 2) {
+            return 5;
+        }
+        return 1;
     }
 }
