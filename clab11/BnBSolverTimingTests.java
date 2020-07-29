@@ -45,7 +45,7 @@ public class BnBSolverTimingTests {
             int min = Integer.MIN_VALUE;
             int minIndex = 0;
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i) < min) {
+                if (items.get(i) > min) {
                     min = items.get(i);
                     minIndex = i;
                 }

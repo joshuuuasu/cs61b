@@ -1,5 +1,10 @@
 package bearmaps.proj2c;
 
+import bearmaps.hw4.AStarSolver;
+import bearmaps.hw4.WeightedEdge;
+import bearmaps.hw4.streetmap.StreetMapGraph;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -24,10 +29,9 @@ public class Router {
      */
     public static List<Long> shortestPath(AugmentedStreetMapGraph g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        //long src = g.closest(stlon, stlat);
-        //long dest = g.closest(destlon, destlat);
-        //return new WeirdSolver<>(g, src, dest, 20).solution();
-        return null;
+        long src = g.closest(stlon, stlat);
+        long dest = g.closest(destlon, destlat);
+        return new AStarSolver<Long>(g, src, dest, 20).solution();
     }
 
     /**
@@ -35,12 +39,74 @@ public class Router {
      * @param g The graph to use.
      * @param route The route to translate into directions. Each element
      *              corresponds to a node from the graph in the route.
-     * @return A list of NavigatiionDirection objects corresponding to the input
+     * @return A list of NavigationDirection objects corresponding to the input
      * route.
      */
     public static List<NavigationDirection> routeDirections(AugmentedStreetMapGraph g, List<Long> route) {
-        /* fill in for part IV */
+        List<NavigationDirection> results = new ArrayList<>();
+        if (route.size() < 2) {
+            return results;
+        }
+
+        //Dealing with Start.
+        NavigationDirection start = new NavigationDirection();
+        start.direction = NavigationDirection.START;
+        WeightedEdge we = getWay(g, route.get(0), route.get(1));
+        start.way = we.getName();
+        start.distance = we.weight();
+        int ind = 1;
+        while (ind + 1 < route.size()) {
+            WeightedEdge w = getWay(g, route.get(ind), route.get(ind + 1));
+            if (!w.getName().equals(start.way)) {
+                break;
+            }
+            start.distance += w.weight();
+            ind++;
+        }
+        results.add(start);
+
+        //Other directions are easy to implement by using function getDirection().
+        double prevBearing = calcBearing(g, route, 0);
+        while (ind < route.size() - 1) {
+            double currBearing = calcBearing(g, route, ind);
+            NavigationDirection curr = new NavigationDirection();
+            curr.direction = NavigationDirection.getDirection(prevBearing, currBearing);
+            WeightedEdge currWay = getWay(g, route.get(ind), route.get(ind + 1));
+            curr.way = currWay.getName();
+            curr.distance = currWay.weight();
+            ind++;
+            while (ind < route.size() - 1) {
+                WeightedEdge w = getWay(g, route.get(ind), route.get(ind + 1));
+                if (!w.getName().equals(curr.way)) {
+                    break;
+                }
+                currBearing = calcBearing(g, route, ind);
+                curr.distance += w.weight();
+                ind++;
+            }
+            prevBearing = currBearing;
+            results.add(curr);
+        }
+        return results;
+    }
+
+    private static WeightedEdge getWay(AugmentedStreetMapGraph g, long from, long to) {
+        for (WeightedEdge e : g.neighbors(from)) {
+            if (e.to().equals(to)) {
+                return e;
+            }
+        }
         return null;
+    }
+
+    private static double calcBearing(AugmentedStreetMapGraph g, List<Long> route, int i) {
+        long from = route.get(i);
+        long to = route.get(i + 1);
+        double lonV = g.lon(from);
+        double lonW = g.lon(to);
+        double latV = g.lat(from);
+        double latW = g.lat(to);
+        return NavigationDirection.bearing(lonV, lonW, latV, latW);
     }
 
     /**
@@ -162,7 +228,7 @@ public class Router {
          * @param currBearing A double in [0, 360.0]
          * @return the Navigation Direction type
          */
-        private static int getDirection(double prevBearing, double currBearing) {
+        protected static int getDirection(double prevBearing, double currBearing) {
             double absDiff = Math.abs(currBearing - prevBearing);
             if (numInRange(absDiff, 0.0, 15.0)) {
                 return NavigationDirection.STRAIGHT;
